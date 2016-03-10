@@ -1,5 +1,9 @@
 module.exports = function getTemplate(app, mainWindow, shell) {
-  const validateArgs = require('./validate-args');
+  const msg = (arg) => `Argument '${arg}' not supplied`;
+
+  if (typeof app === 'undefined') throw new Error(msg('app'));
+  if (typeof mainWindow === 'undefined') throw new Error(msg('mainWindow'));
+  if (typeof shell === 'undefined') throw new Error(msg('shell'));
 
   return [
     /**

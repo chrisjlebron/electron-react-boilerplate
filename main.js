@@ -13,9 +13,9 @@ const shell = electron.shell;
 // user modules
 const getMenuTemplate = require('./main/get-menu-template');
 
-let menu;
-let template;
 let mainWindow = null;
+let counter = 0;
+let breakDelay = 5000;
 
 
 crashReporter.start();
@@ -29,9 +29,23 @@ app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') app.quit();
 });
 
+app.on('browser-window-blur', () => {
+  counter++;
+  if (counter < 3) {
+    mainWindow.focus();
+    mainWindow.setIgnoreMouseEvents(true);
+  }
+});
 
 app.on('ready', () => {
-  mainWindow = new BrowserWindow({ width: 1024, height: 728 });
+  const electronScreen = electron.screen;
+  const size = electronScreen.getPrimaryDisplay().workAreaSize;
+  mainWindow = new BrowserWindow({
+    width: size.width,
+    height: size.height,
+    fullscreen: true
+  });
+  // mainWindow = new BrowserWindow({ width: 1024, height: 728 });
 
   mainWindow.loadURL(`file://${__dirname}/app/app.html`);
 
@@ -43,8 +57,12 @@ app.on('ready', () => {
     mainWindow.openDevTools();
   }
 
-  template = getMenuTemplate(app, mainWindow, shell);
-  menu = Menu.buildFromTemplate(template);
+  setTimeout(() => {
+    mainWindow.focus();
+  }, breakDelay);
+
+  const template = getMenuTemplate(app, mainWindow, shell);
+  const menu = Menu.buildFromTemplate(template);
 
   if (process.platform === 'darwin') {
     Menu.setApplicationMenu(menu);

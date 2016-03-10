@@ -10,3 +10,17 @@ export default function counter(state = 0, action) {
       return state;
   }
 }
+
+// // Method lookup pattern:
+// export default function counter(state = 0, action) {
+//   const handler = {
+//     INCREMENT_COUNTER: state + 1,
+//     DECREMENT_COUNTER: state - 1,
+//     DEFAULT: state
+//   };
+//
+//   if (action.type in handler) {
+//     return handler[action.type];
+//   }
+//   return handler.DEFAULT;
+// }
