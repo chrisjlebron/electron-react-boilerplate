@@ -1,11 +1,11 @@
 import { SET_ACTIVE, SET_RESTING, SET_DISABLED } from '../actions/activity';
 
 // Method lookup pattern:
-export default function actvity(state = {}, action) {
+export default function actvity(state = 'active', action) {
   const handlers = {
-    SET_ACTIVE: state + 1,
-    SET_RESTING: state - 1,
-    SET_DISABLED: state,
+    SET_ACTIVE: 'active',
+    SET_RESTING: 'resting',
+    SET_DISABLED: 'disabled',
     DEFAULT: state
   };
 

@@ -2,19 +2,19 @@ export const SET_ACTIVE = 'SET_ACTIVE';
 export const SET_RESTING = 'SET_RESTING';
 export const SET_DISABLED = 'SET_DISABLED';
 
-export function active() {
+export function setActive() {
   return {
     type: SET_ACTIVE
   };
 }
 
-export function resting() {
+export function setResting() {
   return {
     type: SET_RESTING
   };
 }
 
-export function disabled() {
+export function setDisabled() {
   return {
     type: SET_DISABLED
   };

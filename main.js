@@ -4,33 +4,31 @@
 process.env.NODE_ENV = process.env.NODE_ENV || 'production';
 
 const path = require('path');
+
+// electron
 const electron = require('electron');
 const Postitioner = require('electron-positioner');
-// const menubar = require('menubar');
-const Tray = electron.Tray
+const Tray = electron.Tray;
 const app = electron.app;
 const Menu = electron.Menu;
 const BrowserWindow = electron.BrowserWindow;
 const crashReporter = electron.crashReporter;
 
+// Redux
+import configureStore from './main/store/configureStore';
+const store = configureStore();
+import { setActive, setResting, setDisabled } from './main/actions/activity';
+
+// App config
 const mainIconPath = path.join(__dirname, 'app', 'assets', 'iconTemplate.png');
 const mainIconHighlight = path.join(__dirname, 'app', 'assets', 'iconHighlight.png');
 const secondaryIconPath = path.join(__dirname, 'app', 'assets', 'eye-1.png');
 
-// const mb = menubar({
-//   dir: `${__dirname}/app`,
-//   icon: mainIconPath,
-//   preloadWindow: true
-// });
-
+// App component fallbacks
 let tray = null;
 let restWindow = null;
 let prefsWindow = null;
 const disableLength = '1 hour';
-let state = {
-  isResting: false,
-  isDisabled: false
-};
 
 crashReporter.start();
 
@@ -62,17 +60,17 @@ app.on('ready', () => {
       type: 'normal',
       icon: mainIconPath,
       click: (thisMenuItem, thisBrowserWindow) => {
-        console.log('taking a rest...');
-        state.isResting = true;
+        // console.log('taking a rest...');
+        store.dispatch(setResting());
 
-        // mb.tray.setImage(secondaryIconPath);
+        displayRestWindow();
         tray.setImage(secondaryIconPath);
 
-        console.log('before', state);
+        // console.log('before', store.getState());
         setTimeout(() => {
-          state.isResting = false;
-          console.log('after', state);
-          // mb.tray.setImage(mainIconPath);
+          store.dispatch(setActive());
+          // console.log('after', store.getState());
+          restWindow.close();
           tray.setImage(mainIconPath);
         }, 10000);
       }
@@ -82,13 +80,17 @@ app.on('ready', () => {
       type: 'checkbox',
       click: (thisMenuItem, thisBrowserWindow) => {
         console.log('disabling...');
-        console.log(thisMenuItem);
+
+        store.dispatch(setDisabled());
+        console.log('\n\n\ndisabled state:', store.getState());
+
         setTimeout(() => {
           thisMenuItem.checked = false;
+          store.dispatch(setActive());
+          console.log('\n\n\nundisabled state:', store.getState());
           // On Linux in order for changes made to individual MenuItems
           // to take effect, you have to call setContextMenu again
           tray.setContextMenu(contextMenu);
-          // mb.tray.setContextMenu(contextMenu);
         }, 2000);
       }
     },
@@ -108,8 +110,8 @@ app.on('ready', () => {
       click: () => {
         // const size = getLargestWindowSize();
 
-        restWindow = createRestWindow(size);
-        displayRestWindow();
+        // restWindow = createRestWindow(size);
+        // displayRestWindow();
       }
     },
     { label: 'Quit',
@@ -117,7 +119,7 @@ app.on('ready', () => {
       selector: 'terminate:',
     }
   ]);
-  // mb.tray.setContextMenu(contextMenu);
+
   tray.setContextMenu(contextMenu);
   tray.on('click', (...args) => {
     console.log('here we go...\n\n\n');
@@ -128,9 +130,10 @@ app.on('ready', () => {
 
 app.on('browser-window-blur', () => {
   console.log('app.on => browser-window-blur');
-  if (state.isResting) {
-    restWindow.focus();
-    // restWindow.setIgnoreMouseEvents(true);
+  if (store.getState().activity === 'resting') {
+    console.log('\n\n\n\nWEEEEEEEEEEEEE\n\n\n\n\n');
+  //   restWindow.focus();
+  //   // restWindow.setIgnoreMouseEvents(true);
   }
 });
 
@@ -172,7 +175,6 @@ function displayRestWindow() {
 }
 
 function createPrefsWindow() {
-  // console.log(mb.positioner);
   if (!prefsWindow) {
     prefsWindow = new BrowserWindow({
       frame: false,

@@ -3,7 +3,7 @@
   "productName": "ElectronReact",
   "version": "0.8.0",
   "description": "Electron application boilerplate based on React, React Router, Webpack, React Hot Loader for rapid application development",
-  "main": "main.js",
+  "main": "index.js",
   "scripts": {
     "test": "cross-env NODE_ENV=test mocha --compilers js:babel-core/register --recursive --require ./test/setup.js test/**/*.spec.js",
     "test-watch": "npm test -- --watch",
@@ -91,8 +91,10 @@
     "webpack-target-electron-renderer": "^0.4.0"
   },
   "dependencies": {
+    "babel-register": "^6.7.2",
     "css-modules-require-hook": "^3.0.0",
     "electron-debug": "^0.5.2",
+    "electron-positioner": "^2.0.3",
     "font-awesome": "^4.4.0",
     "postcss": "^5.0.18",
     "react": "^0.14.2",

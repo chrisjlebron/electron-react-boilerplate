@@ -17,11 +17,11 @@ const router = routerMiddleware(hashHistory);
 const enhancer = compose(
   applyMiddleware(thunk, router, logger),
   // DevTools.instrument(),
-  persistState(
-    window.location.href.match(
-      /[?&]debug_session=([^&]+)\b/
-    )
-  )
+  // persistState(
+  //   window.location.href.match(
+  //     /[?&]debug_session=([^&]+)\b/
+  //   )
+  // )
 );
 
 export default function configureStore(initialState) {
